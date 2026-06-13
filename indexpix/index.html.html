@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus Tech - Maquininha Pix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background:
+        radial-gradient(circle at top, rgba(34,197,94,0.10), transparent 35%),
+        #0A0A0A;
+      color: #FFFFFF;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .glass {
+      background: rgba(23, 23, 23, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 8px 30px rgb(0,0,0,0.5);
+    }
+
+    .glow-green { box-shadow: 0 0 28px rgba(34,197,94,0.28); }
+
+    .key {
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select: none;
+    }
+
+    .key:active {
+      transform: scale(.94);
+      background: rgba(34,197,94,0.16);
+      border-color: rgba(34,197,94,0.55);
+    }
+
+    .screen-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+  <main class="flex-1 flex items-center justify-center p-4">
+    <section class="w-full max-w-md">
+
+      <header class="text-center mb-5">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#171717] border border-white/10 mb-3 shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
+          <i class="fa-brands fa-pix text-[#22C55E] text-2xl"></i>
+        </div>
+
+        <h1 class="text-2xl font-black tracking-tighter">Nexus Tech</h1>
+        <p class="text-sm text-[#A3A3A3] mt-1">Maquininha Pix digital</p>
+      </header>
+
+      <div class="glass rounded-3xl p-4">
+
+        <div class="rounded-3xl bg-[#0A0A0A] border border-white/10 p-4 mb-4 screen-grid overflow-hidden">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <p class="text-[10px] uppercase tracking-widest text-[#A3A3A3] font-bold">Pagamento</p>
+              <p class="text-xs text-[#22C55E] font-bold">Pix instantâneo</p>
+            </div>
+
+            <span id="status" class="bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] text-[10px] font-black px-3 py-1 rounded-full">
+              Aguardando
+            </span>
+          </div>
+
+          <div class="text-center py-5">
+            <p class="text-xs text-[#A3A3A3] font-semibold mb-2">Valor</p>
+            <h2 id="valor-display" class="text-5xl font-black tracking-tighter text-white">R$ 0,00</h2>
+            <p id="mensagem-display" class="text-xs text-[#A3A3A3] mt-3">Digite o valor no teclado abaixo</p>
+          </div>
+
+          <div id="resultado-pix" class="hidden mt-4">
+            <div id="qr-box" class="hidden bg-white rounded-2xl p-3 w-fit mx-auto mb-3">
+              <img id="qr-img" src="" alt="QR Code Pix" class="w-44 h-44 object-contain">
+            </div>
+
+            <textarea id="pix-copia-cola" readonly rows="3" class="w-full bg-[#171717] border border-white/10 rounded-2xl p-3 text-xs text-[#22C55E] resize-none" placeholder="Pix Copia e Cola aparece aqui"></textarea>
+
+            <button onclick="copiarPix()" class="mt-3 w-full bg-[#22C55E] hover:bg-green-400 text-black font-black py-3 rounded-2xl glow-green transition-all">
+              <i class="fa-solid fa-copy"></i> Copiar Pix
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <button onclick="digitarNumero('1')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">1</button>
+          <button onclick="digitarNumero('2')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">2</button>
+          <button onclick="digitarNumero('3')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">3</button>
+
+          <button onclick="digitarNumero('4')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">4</button>
+          <button onclick="digitarNumero('5')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">5</button>
+          <button onclick="digitarNumero('6')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">6</button>
+
+          <button onclick="digitarNumero('7')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">7</button>
+          <button onclick="digitarNumero('8')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">8</button>
+          <button onclick="digitarNumero('9')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">9</button>
+
+          <button onclick="cancelarValor()" class="key h-16 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 font-black text-sm">CANCEL</button>
+          <button onclick="digitarNumero('0')" class="key h-16 rounded-2xl bg-[#171717] border border-white/10 text-2xl font-black">0</button>
+          <button onclick="limparValor()" class="key h-16 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-black text-sm">CLEAR</button>
+        </div>
+
+        <button id="btn-gerar" onclick="gerarPix()" class="w-full bg-[#22C55E] hover:bg-green-400 text-black font-black py-4 rounded-3xl glow-green transition-all text-lg">
+          <i class="fa-brands fa-pix"></i> Gerar Pix
+        </button>
+      </div>
+
+      <footer class="text-center mt-5 text-xs text-[#A3A3A3] flex items-center justify-center gap-3 flex-wrap">
+        <span><i class="fa-solid fa-lock text-[#22C55E]"></i> Compra Segura</span>
+        <span class="text-white/20">|</span>
+        <span><i class="fa-solid fa-bolt text-[#22C55E]"></i> Processamento Instantâneo</span>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    let valorCentavos = "";
+
+    function formatarValor() {
+      const numero = Number(valorCentavos || "0") / 100;
+      return numero.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function atualizarTela() {
+      document.getElementById("valor-display").textContent = formatarValor();
+      document.getElementById("resultado-pix").classList.add("hidden");
+      document.getElementById("status").textContent = "Aguardando";
+      document.getElementById("mensagem-display").textContent = "Digite o valor no teclado abaixo";
+      document.getElementById("qr-box").classList.add("hidden");
+      document.getElementById("pix-copia-cola").value = "";
+    }
+
+    function digitarNumero(num) {
+      if (valorCentavos.length >= 8) return;
+      valorCentavos += num;
+      valorCentavos = valorCentavos.replace(/^0+/, "");
+      atualizarTela();
+    }
+
+    function limparValor() {
+      valorCentavos = valorCentavos.slice(0, -1);
+      atualizarTela();
+    }
+
+    function cancelarValor() {
+      valorCentavos = "";
+      atualizarTela();
+    }
+
+    async function gerarPix() {
+      const valor = Number(valorCentavos || "0") / 100;
+
+      if (valor < 1) {
+        alert("O valor mínimo para gerar Pix é R$ 1,00.");
+        return;
+      }
+
+      const btn = document.getElementById("btn-gerar");
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando...';
+
+      document.getElementById("status").textContent = "Gerando...";
+      document.getElementById("mensagem-display").textContent = "Aguarde, criando cobrança Pix...";
+
+      try {
+        const resposta = await fetch("/.netlify/functions/gerar-pix", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ valor })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(dados.erro || "Erro ao gerar Pix.");
+        }
+
+        document.getElementById("status").textContent = "Gerado";
+        document.getElementById("mensagem-display").textContent = "Pix pronto para pagamento";
+        document.getElementById("resultado-pix").classList.remove("hidden");
+
+        document.getElementById("pix-copia-cola").value =
+          dados.pix_copia_cola || "";
+
+        if (dados.qr_code_base64) {
+          const qr = dados.qr_code_base64.startsWith("data:image")
+            ? dados.qr_code_base64
+            : "data:image/png;base64," + dados.qr_code_base64;
+
+          document.getElementById("qr-img").src = qr;
+          document.getElementById("qr-box").classList.remove("hidden");
+        }
+
+        if (!dados.pix_copia_cola) {
+          alert("Pix gerado, mas o copia e cola não veio na resposta.");
+        }
+
+      } catch (erro) {
+        alert("Erro ao gerar Pix: " + erro.message);
+        document.getElementById("status").textContent = "Erro";
+        document.getElementById("mensagem-display").textContent = "Não foi possível gerar o Pix.";
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-brands fa-pix"></i> Gerar Pix';
+      }
+    }
+
+    function copiarPix() {
+      const campo = document.getElementById("pix-copia-cola");
+
+      if (!campo.value) {
+        alert("Nenhum Pix para copiar.");
+        return;
+      }
+
+      campo.select();
+      campo.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Pix copiado!");
+    }
+  </script>
+</body>
+</html>
